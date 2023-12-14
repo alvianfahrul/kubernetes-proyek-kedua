@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: karsajobs-ui-deployment  # Nama dari Deployment
+  labels:
+    app: karsajobs  # Label aplikasi
+    tier: frontend  # Label tier
+spec:
+  replicas: 1  # Menentukan jumlah replika yang akan dijalankan
+  selector:
+    matchLabels:
+      tier: frontend  # Seleksi label untuk menentukan pod mana yang akan dimanage oleh Deployment
+  template:
+    metadata:
+      labels:
+        app: karsajobs  # Label aplikasi untuk pod
+        tier: frontend  # Label tier untuk pod
+    spec:
+      containers:
+      - name: karsajobs-ui-container  # Nama dari container
+        image: ghcr.io/alvianfahrul/karsajobs-ui:latest  # Nama dan versi dari gambar Docker
+        resources:
+          limits:
+            cpu: 1  # Batas maksimum CPU yang dapat digunakan
+            memory: 512Mi  # Batas maksimum memori yang dapat digunakan
+        ports:
+          - containerPort: 8000  # Port yang akan di-expose oleh container

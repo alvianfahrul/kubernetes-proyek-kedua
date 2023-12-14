@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-statefulset  # Nama dari StatefulSet
+  labels:
+    app: karsajobs  # Label aplikasi
+spec:
+  selector:
+    matchLabels:
+      app: karsajobs  # Seleksi pod dengan label aplikasi
+      tier: mongodb  # Seleksi pod dengan label tier "mongodb"
+  serviceName: mongo-service  # Nama layanan yang digunakan oleh StatefulSet
+  replicas: 2  # Jumlah replika yang akan dijalankan
+  minReadySeconds: 10  # Minimum waktu yang harus berjalan sebelum dianggap siap
+  template:
+    metadata:
+      labels:
+        app: karsajobs  # Label aplikasi untuk pod
+        tier: mongodb  # Label tier untuk pod
+    spec:
+      terminationGracePeriodSeconds: 10  # Waktu grace period saat proses terminasi
+      containers:
+      - image: mongo:latest  # Nama dan versi dari gambar Docker
+        name: mongodb-container  # Nama dari container
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME_FILE
+          value: /etc/mongo-credentials/MONGO_ROOT_USERNAME  # Env variable untuk username MongoDB
+        - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+          value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD  # Env variable untuk password MongoDB
+        ports:
+        - containerPort: 27017  # Port yang akan digunakan oleh container MongoDB
+          name: mongo-port
+        volumeMounts:
+        - name: mongo-pv  # Mount volume dari PersistentVolumeClaim
+          mountPath: /data/db
+        - name: mongo-configmap  # Mount volume dari ConfigMap
+          mountPath: /config
+        - name: mongo-secret  # Mount volume dari Secret
+          mountPath: /etc/mongo-credentials
+      volumes:
+      - name: mongo-pv  # Volume PersistentVolumeClaim
+        persistentVolumeClaim:
+          claimName: mongo-pvc  # Nama PersistentVolumeClaim yang akan digunakan
+      - name: mongo-configmap  # Volume dari ConfigMap
+        configMap:
+          name: mongo-configmap  # Nama ConfigMap yang akan digunakan
+      - name: mongo-secret  # Volume dari Secret
+        secret:
+          secretName: mongo-secret  # Nama Secret yang akan digunakan

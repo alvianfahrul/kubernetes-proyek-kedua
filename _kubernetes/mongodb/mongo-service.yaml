@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service  # Nama dari Service
+  labels:
+    app: karsajobs  # Label aplikasi
+spec:
+  selector:
+    app: karsajobs  # Seleksi pod dengan label aplikasi
+    tier: mongodb  # Seleksi pod dengan label tier "mongodb"
+  ports:
+  - port: 27017  # Port yang akan di-expose oleh Service
+  clusterIP: None  # ClusterIP diatur menjadi "None" untuk layanan yang tidak memerlukan clusterIP

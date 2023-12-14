@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv  # Nama dari PersistentVolume
+  labels:
+    type: local  # Label tipe, dalam hal ini "local"
+spec:
+  storageClassName: standard  # Nama kelas penyimpanan (StorageClass)
+  capacity:
+    storage: 1Gi  # Kapasitas penyimpanan 1 gigabyte
+  accessModes:
+    - ReadWriteOnce  # Mode akses yang memungkinkan baca-tulis oleh satu node
+  hostPath:
+    path: "/mnt/data/mongodb"  # Path di host untuk menyimpan data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc  # Nama dari PersistentVolumeClaim
+  labels:
+    app: karsajobs  # Label aplikasi
+spec:
+  storageClassName: standard  # Nama kelas penyimpanan (StorageClass)
+  accessModes:
+    - ReadWriteOnce  # Mode akses yang memungkinkan baca-tulis oleh satu node
+  resources:
+    requests:
+      storage: 1Gi  # Permintaan kapasitas penyimpanan 1 gigabyte

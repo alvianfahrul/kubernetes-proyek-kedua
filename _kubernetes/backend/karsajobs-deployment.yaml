@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: karsajobs-deployment  # Nama dari Deployment
+  labels:
+    app: karsajobs  # Label aplikasi
+    tier: backend  # Label tier
+spec:
+  replicas: 1  # Menentukan jumlah replika yang akan dijalankan
+  selector:
+    matchLabels:
+      tier: backend  # Seleksi label untuk menentukan pod mana yang akan dimanage oleh Deployment
+  template:
+    metadata:
+      labels:
+        app: karsajobs  # Label aplikasi untuk pod
+        tier: backend  # Label tier untuk pod
+    spec:
+      containers:
+      - name: karsajobs-container  # Nama dari container
+        image: ghcr.io/alvianfahrul/karsajobs:latest  # Nama dan versi dari gambar Docker
+        resources:
+          limits:
+            cpu: 1  # Batas maksimum CPU yang dapat digunakan
+            memory: 512Mi  # Batas maksimum memori yang dapat digunakan
+        ports:
+          - containerPort: 8080  # Port yang akan di-expose oleh container
+        env:
+          - name: APP_PORT
+            value: "8080"  # Variabel lingkungan untuk port aplikasi
+          - name: MONGO_HOST
+            value: mongo-service  # Alamat host dari layanan MongoDB
+          - name: MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret  # Nama Secret MongoDB untuk username
+                key: MONGO_ROOT_USERNAME  # Nama key untuk username dalam Secret
+          - name: MONGO_PASS
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret  # Nama Secret MongoDB untuk password
+                key: MONGO_ROOT_PASSWORD  # Nama key untuk password dalam Secret
